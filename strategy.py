@@ -6,7 +6,7 @@ def generate_signals(candles_target: pd.DataFrame, candles_anchor: pd.DataFrame)
 
     Inputs:
     - candles_target: OHLCV for LDO (1H)
-    - candles_anchor: Merged OHLCV with columns 'close_BTC' and 'close_ETH' (1H)
+    - candles_anchor: Merged OHLCV with columns 'close_BTC_1H' and 'close_ETH_1H' (1H)
 
     Output:
     - DataFrame with ['timestamp', 'signal']
@@ -15,7 +15,7 @@ def generate_signals(candles_target: pd.DataFrame, candles_anchor: pd.DataFrame)
         
         df = pd.merge(
             candles_target[['timestamp', 'close']],
-            candles_anchor[['timestamp', 'close_BTC', 'close_ETH_1H', 'close_BTC_4H', 'close_ETH_4H']],
+            candles_anchor[['timestamp', 'close_BTC_1H', 'close_ETH_1H', 'close_BTC_4H', 'close_ETH_4H']],
             on='timestamp',
             how='inner'
         )
