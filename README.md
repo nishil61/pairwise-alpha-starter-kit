@@ -1,17 +1,24 @@
-# 🧠 PairWise Alpha Starter Kit
+# 🧠 PairWise Alpha Round 2 Starter Kit
 
-Welcome to the official starter repo for the [**Lunor Quest: PairWise Alpha**](https://app.lunor.quest/challenge/1000036) challenge.
+Welcome to the official starter repo for **[Lunor Quest: PairWise Alpha Round 2](https://app.lunor.quest/challenge/1000037)**.
 
-Your mission is to create a **deterministic trading strategy** that identifies coins correlated with **BTC, ETH, or SOL** — even with a time lag — and executes trades on the **Target Coin** based on their behavior.
+Your mission is to create a **deterministic trading strategy** that identifies profitable relationships between target coins and anchor coins (BTC, ETH, SOL, and others), executing trades with dynamic position sizing based on predictable patterns.
 
 ---
 
 ## 🚀 Getting Started
 
+### **Prerequisites**
+- **Python 3.7+** installed on your system
+- **Required packages**: `pandas`, `requests`, `numpy` (install via `pip install pandas requests numpy`)
+
+### **Setup Steps**
 1. **Fork this repository**
-2. Open and edit `strategy.py` with your logic
-3. Run `submission_check.py` to validate your submission
-4. Submit only your final `strategy.py` file to the Lunor Quest platform
+2. **Install dependencies**: `pip install pandas requests numpy`
+3. **Place your `strategy.py` in the same directory** as `submission_check.py`
+4. Edit `strategy.py` with your trading logic
+5. Run `python submission_check.py` to validate your submission
+6. Submit only your final `strategy.py` file to the Lunor Quest platform
 
 ---
 
@@ -19,137 +26,387 @@ Your mission is to create a **deterministic trading strategy** that identifies c
 
 | File                  | Description |
 |-----------------------|-------------|
-| `strategy.py` (Submit ONLY this file) | Starter template for your strategy |
-| `submission_check.py`  | Local validator to ensure your code meets all requirements |
-| `fetch_data.py`  | Helper script to fetch data from Binance |
+| `strategy.py` ⭐ **(Submit ONLY this file)** | Your strategy implementation |
+| `submission_check.py`  | **Local validator** - ensures your code meets all requirements |
+| `data_download_manager.py`  | Helper module for downloading market data |
+| `strategy_template.py`  | Minimal template to get started |
 
+---
+
+## 🌟 What's New in Round 2
+
+Round 2 introduces major enhancements for real-world trading:
+
+* ✅ **Multi-Coin Support**: Up to **3 target coins** with up to **5 anchor coins**
+* 🧠 **Position Sizing**: Dynamic allocation from **0.0 to 1.0** per trade
+* 💹 **Capital Simulation**: Realistic portfolio growth modeling
+* ⏱️ **More Timeframes**: Added `2H` and `12H` for better signal diversity
+* 📊 **Stability Score**: Bonus points for smooth capital curves
+* 🔓 **Expanded Anchors**: Any Binance coin with ≥$50M daily volume
+* ⚖️ **Forward Testing Only**: No public leaderboard, blind evaluation
+
+---
+
+## 💰 Prize Pool: $5,000 USD + Bonus Gems
+
+**Top 3 USD Winners:**
+* 🥇 1st Place: $2,500
+* 🥈 2nd Place: $1,500  
+* 🥉 3rd Place: $1,000
+
+**Top 10 Leaderboard:** 1,000 to 100 Gems (descending)
 
 ---
 
 ## 🧪 Your Strategy Must Implement
 
-### `generate_signals(candles_target, candles_anchor)`
+### 📊 `generate_signals(anchor_df, target_df)`
 
-Takes OHLCV data (pandas DataFrames) for:
-- **candles_target**: the coin you're trading
-- **candles_anchor**: merged OHLCV for anchor coins like BTC, ETH, SOL
+**Input DataFrames:**
+- `anchor_df`: Contains `timestamp` + anchor OHLCV columns like `close_BTC_4H`, `volume_ETH_1H`
+- `target_df`: Contains `timestamp` + target OHLCV columns like `close_BONK_1H`, `open_PEPE_2H`
 
-Returns a DataFrame with:
+**Must Return:**
 ```python
-[
-  {"timestamp": ..., "signal": "BUY" or "SELL" or "HOLD"},
-  ...
-]
+pd.DataFrame({
+    "timestamp": [...],     # 1H frequency timestamps
+    "symbol": [...],        # Target coin symbol(s)
+    "signal": [...],        # "BUY", "SELL", or "HOLD"
+    "position_size": [...]  # 0.0 to 1.0 (decimal allocation)
+})
 ```
 
----
+### 🎯 `get_coin_metadata()`
 
-### `get_coin_metadata()`
-
-Returns metadata about which coins and timeframes you're using:
-for (e.g.)
-
+**Define your trading universe:**
 ```python
 {
-  "target": {
-    "symbol": "LDO",
-    "timeframe": "1H"
-  },
-  "anchors": [
-    {"symbol": "BTC", "timeframe": "1H"},
-    {"symbol": "ETH", "timeframe": "1H"}
-  ]
+    "targets": [
+        {"symbol": "BONK", "timeframe": "1H"},
+        {"symbol": "PEPE", "timeframe": "2H"}  # Up to 3 targets
+    ],
+    "anchors": [
+        {"symbol": "BTC", "timeframe": "4H"},
+        {"symbol": "ETH", "timeframe": "4H"},
+        {"symbol": "SOL", "timeframe": "1D"}   # Up to 5 anchors
+    ]
 }
 ```
 
-> ⚠️ **Important**: Any anchor coin referenced in your signal logic (e.g., `close_BTC`) **must be listed** in this metadata.  
-> Otherwise your submission will **fail** during validation and be disqualified.
+---
+
+## ✅ Submission Requirements
+
+### 📋 Technical Requirements
+- **Max Coins**: 3 targets, 5 anchors
+- **Timeframes**: `1H`, `2H`, `4H`, `12H`, `1D` only
+- **Target Volume**: ≥$5M average daily USD volume
+- **Anchor Volume**: ≥$50M average daily USD volume  
+- **Libraries**: Only `pandas` and `numpy` allowed
+- **Deterministic**: 100% reproducible (no randomness)
+- **Execution**: Must complete within 90 seconds
+
+### 📈 Trading Requirements
+- **Minimum 2 buy-sell pairs** per target symbol
+- **Position sizes** between 0.0 and 1.0
+- **Valid signals** only: BUY, SELL, HOLD
+- **Complete timestamps** (1H frequency, no missing data)
 
 ---
 
-## 📊 OHLCV Data Expectations
+## 🔍 Validation Process
 
-### 🎯 `candles_target` DataFrame
+### **Step 1: Run Local Validation**
 
-| Column     | Description           |
-|------------|-----------------------|
-| `timestamp`| ISO format timestamp  |
-| `open`     | Open price            |
-| `high`     | High price            |
-| `low`      | Low price             |
-| `close`    | Close price           |
-| `volume`   | Trading volume (token units) |
-
----
-
-### 🛰️ `candles_anchor` DataFrame
-
-Includes full OHLCV data for each anchor coin, prefixed by symbol:
-
-| Column Format        | Description                         |
-|----------------------|-------------------------------------|
-| `timestamp`          | Shared with target coin             |
-| `open_<SYMBOL>`      | Open price of anchor coin           |
-| `high_<SYMBOL>`      | High price of anchor coin           |
-| `low_<SYMBOL>`       | Low price of anchor coin            |
-| `close_<SYMBOL>`     | Close price of anchor coin          |
-| `volume_<SYMBOL>`    | Trading volume of anchor coin       |
-
-> Example:
-```python
-candles_anchor.columns
-# ['timestamp', 'open_BTC', 'high_BTC', 'low_BTC', 'close_BTC', 'volume_BTC',
-#  'open_ETH', 'high_ETH', 'low_ETH', 'close_ETH', 'volume_ETH']
-```
-
----
-
-## ⚠️ Rules & Restrictions
-
-| Rule | Description |
-|------|-------------|
-| ✅ **Target Coin** | Must be Binance-listed and have **average daily USD volume ≥ $5M** from Jan 1 2025, 00:00:00 UTC – May 9 2025, 00:00:00 UTC  |
-| ✅ **Anchor Coins** | Must be **BTC**, **ETH**, or **SOL** |
-| ✅ **Timeframes** | Only `1H`, `4H`, and `1D` are allowed |
-| ❌ **No External Data** | Only use OHLCV from Binance |
-| ❌ **No External Libraries** | Only `pandas` and `numpy` allowed |
-| ✅ **Deterministic** | Output must be 100% reproducible from candles (no randomness or future leak logic) |
-
----
-
-## ✅ Run the Submission Check
+**⚠️ IMPORTANT**: Your `strategy.py` file **must be in the same directory** as `submission_check.py`
 
 ```bash
 python submission_check.py
 ```
 
-This script checks:
-- [x] Required functions exist
-- [x] Signal format is correct
-- [x] Metadata matches strategy logic
-- [x] Only allowed libraries are imported
-- [x] Signal length matches candles
-- [x] Signal values are valid (`BUY`, `SELL`, `HOLD`)
-- [x] Avg daily USD volume ≥ $5M (calculated from dummy OHLCV)
+### **What Gets Validated:**
+
+✅ **Module Loading** - Python syntax and imports  
+✅ **Function Existence** - Required functions present  
+✅ **Output Format** - Correct DataFrame structure  
+✅ **Limits Compliance** - Coin/timeframe limits respected  
+✅ **Symbol Availability** - All coins exist on Binance  
+✅ **Volume Requirements** - Meet minimum volume thresholds  
+✅ **Signal Generation** - Function works with real data  
+✅ **Signal Validation** - Proper values and trading activity  
+✅ **Trading Activity** - Minimum 2 buy-sell pairs per symbol  
+
+### **Example Validation Output:**
+```
+============================================================
+                Strategy Validation Suite
+Strategy File: strategy.py
+============================================================
+
+✓ Module Loading - PASS
+   Successfully loaded strategy module from strategy.py
+
+✓ Function Existence - PASS  
+   get_coin_metadata() function found and is callable
+
+✓ Output Format - PASS
+   Valid format with 2 targets and 3 anchors
+
+✓ Limits Compliance - PASS
+   All limits and timeframes are valid
+
+✓ USDT Pair Availability - PASS
+   All symbols available as USDT pairs
+
+✓ Volume Requirements (Historical Average) - PASS
+   All volume requirements met using daily averages
+
+✓ Generate Signals Function - PASS
+   Function found with parameters: ['anchor_df', 'target_df']
+
+✓ Strategy Data Generation - PASS
+   Successfully generated data - Full: (8760, 11), Signals: (8760, 4)
+
+✓ Signals Validation - PASS
+   All signal validations passed
+
+============================================================
+🎉 ALL TESTS PASSED!
+Strategy is ready for deployment.
+============================================================
+```
+
+---
+
+## 📊 Data Structure Reference
+
+### 🎯 Target Data Format (`target_df`)
+Your `target_df` contains normalized 1H frequency data:
+```python
+target_df.columns
+# ['timestamp', 'open_BONK_1H', 'high_BONK_1H', 'low_BONK_1H', 
+#  'close_BONK_1H', 'volume_BONK_1H', 'open_PEPE_2H', ...]
+```
+
+### 🛰️ Anchor Data Format (`anchor_df`)
+Your `anchor_df` contains normalized 1H frequency data:
+```python
+anchor_df.columns
+# ['timestamp', 'open_BTC_4H', 'high_BTC_4H', 'low_BTC_4H',
+#  'close_BTC_4H', 'volume_BTC_4H', 'open_ETH_4H', ...]
+```
+
+### 🔧 Data Normalization & NaN Handling
+
+**All data is normalized to 1H frequency (8,760 rows)** with the following behavior:
+
+#### **For 1H Timeframes:**
+```python
+# BONK 1H - Data every hour
+timestamp                | close_BONK_1H
+2024-06-01 00:00:00+00:00 | 0.000012
+2024-06-01 01:00:00+00:00 | 0.000013  
+2024-06-01 02:00:00+00:00 | 0.000011
+```
+
+#### **For 2H Timeframes:**
+```python
+# SOL 2H - Data every 2 hours, NaN in between
+timestamp                | close_SOL_2H
+2024-06-01 00:00:00+00:00 | 165.23
+2024-06-01 01:00:00+00:00 | NaN       # Missing hour
+2024-06-01 02:00:00+00:00 | 167.45
+2024-06-01 03:00:00+00:00 | NaN       # Missing hour
+```
+
+#### **For 4H Timeframes:**
+```python
+# BTC 4H - Data every 4 hours, 3 NaN hours between
+timestamp                | close_BTC_4H
+2024-06-01 00:00:00+00:00 | 67500.0
+2024-06-01 01:00:00+00:00 | NaN
+2024-06-01 02:00:00+00:00 | NaN  
+2024-06-01 03:00:00+00:00 | NaN
+2024-06-01 04:00:00+00:00 | 67650.0
+```
+
+#### **For 1D Timeframes:**
+```python
+# ETH 1D - Data once per day, 23 NaN hours
+timestamp                | close_ETH_1D
+2024-06-01 00:00:00+00:00 | 3500.0
+2024-06-01 01:00:00+00:00 | NaN
+2024-06-01 02:00:00+00:00 | NaN
+# ... (22 more NaN hours) ...
+2024-06-02 00:00:00+00:00 | 3520.0
+```
+
+### 📋 Complete Example
+```python
+def generate_signals(anchor_df, target_df):
+    # Sample data structure you'll receive:
+    
+    # anchor_df shape: (8760, 11) - 1 year of hourly data
+    print(anchor_df.head())
+    #        timestamp              close_BTC_4H  close_ETH_4H
+    # 0  2024-06-01 00:00:00+00:00     67500.0      3500.0
+    # 1  2024-06-01 01:00:00+00:00         NaN         NaN
+    # 2  2024-06-01 02:00:00+00:00         NaN         NaN  
+    # 3  2024-06-01 03:00:00+00:00         NaN         NaN
+    # 4  2024-06-01 04:00:00+00:00     67650.0         NaN
+    
+    # target_df shape: (8760, 6) - 1 year of hourly data
+    print(target_df.head())
+    #        timestamp              close_BONK_1H
+    # 0  2024-06-01 00:00:00+00:00      0.000012
+    # 1  2024-06-01 01:00:00+00:00      0.000013
+    # 2  2024-06-01 02:00:00+00:00      0.000011
+    # 3  2024-06-01 03:00:00+00:00      0.000014
+    # 4  2024-06-01 04:00:00+00:00      0.000015
+    
+    # Handle NaN values in your logic:
+    btc_price = anchor_df['close_BTC_4H'].iloc[i]
+    if pd.notna(btc_price):
+        # Use the price
+        pass
+    else:
+        # Handle missing data
+        pass
+```
+
+### ⚠️ Important NaN Considerations
+
+1. **Always check for NaN**: Use `pd.notna()` or `pd.isna()` before using values
+2. **NaN Pattern**: Predictable based on timeframe (every 2H, 4H, etc.)
+3. **Complete Timestamps**: All 8,760 hourly timestamps are present
+4. **No Forward Fill**: Missing periods remain as NaN (no artificial data)
+
+### 📅 Validation Data Range
+- **Local Validation Period**: June 1, 2024 00:00:00 GMT → May 31, 2025 23:59:59 GMT
+- **Frequency**: 1H (hourly timestamps)
+- **Total Rows**: 8,760 (365 days × 24 hours)
+- **Format**: `2024-06-01 00:00:00+00:00`
+- **Volume Calculations**: Based on this historical period for local validation
+
+⚠️ **Note**: Local validation uses historical data for technical testing. Final evaluation will be conducted on the forward testing period specified in the challenge.
+
+---
+
+## 🚧 Evaluation Cutoffs
+
+Your strategy must meet **ALL** minimum thresholds:
+
+| Metric | Minimum Requirement |
+|--------|-------------------|
+| **Profitability** | ≥ 5% |
+| **Sharpe Ratio** | ≥ 0.5 |
+| **Max Drawdown** | ≤ 50% |
+| **Trading Activity** | ≥ 1 executed trade |
+
+---
+
+## 🏆 Scoring System
+
+| Criterion | Max Points | Formula |
+|-----------|------------|---------|
+| **Profitability** | 45 pts | `min(45.0, (pnl_percent / 300.0) * 45.0)` |
+| **Sharpe Ratio** | 35 pts | `min(35.0, (sharpe / 5.0) * 35.0)` |
+| **Max Drawdown** | 20 pts | `max(0.0, (1.0 - drawdown_pct / 50.0) * 20.0)` |
+| **Stability Score** | Bonus | `r_squared * bonus_pts` (smooth capital curve) |
+
+---
+
+## 📈 Evaluation Overview
+
+### **Local Validation (submission_check.py)**
+- **Purpose**: Technical validation to ensure your strategy meets format requirements
+- **Data Period**: June 1, 2024 → May 31, 2025 (historical data)
+- **Data Source**: Real Binance OHLCV data for technical testing
+- **Volume Requirements**: Validated using historical averages from validation period
+
+### **Final Forward Testing (Platform)**
+- **Evaluation Window**: May 18 – June 14, 2025 (UTC)
+- **Data**: Unseen forward test data
+- **Method**: Blind evaluation with real capital simulation
+- **Ranking**: Based solely on forward testing performance
+
+---
+
+## 🛠️ Quick Start Template
+
+Use `strategy_template.py` as your starting point:
+
+```python
+import pandas as pd
+
+def get_coin_metadata() -> dict:
+    return {
+        "targets": [{"symbol": "BONK", "timeframe": "1H"}],
+        "anchors": [{"symbol": "BTC", "timeframe": "4H"}]
+    }
+
+def generate_signals(anchor_df: pd.DataFrame, target_df: pd.DataFrame) -> pd.DataFrame:
+    # Your strategy logic here
+    
+    return pd.DataFrame({
+        'timestamp': target_df['timestamp'],
+        'symbol': 'BONK',
+        'signal': 'HOLD',           # Your signals: BUY/SELL/HOLD  
+        'position_size': 0.0        # Your position size: 0.0 to 1.0
+    })
+```
+
+---
+
+## 🔧 Common Validation Issues
+
+**❌ File Location Error**
+```
+Error: Strategy file 'strategy.py' not found
+```
+**✅ Solution**: Ensure `strategy.py` is in the same directory as `submission_check.py`
+
+**❌ Missing Columns**  
+```
+Missing required columns: ['position_size']
+```
+**✅ Solution**: Return all 4 required columns: timestamp, symbol, signal, position_size
+
+**❌ Invalid Signals**
+```
+Invalid signal values: {'BUY_NOW'}. Must be one of: {'BUY', 'SELL', 'HOLD'}
+```
+**✅ Solution**: Use only BUY, SELL, or HOLD (case-sensitive)
+
+**❌ Insufficient Trading**
+```
+Only 0 complete buy-sell pairs (BUY: 5, SELL: 0)
+```
+**✅ Solution**: Ensure at least 2 complete buy-sell cycles per target
 
 ---
 
 ## 🏁 Final Submission
 
-Once you're validated:
-- Submit just your `strategy.py` file on the Lunor Quest portal.
+1. ✅ **Validate locally**: `python submission_check.py` passes all tests
+2. ✅ **Check file**: Only submit `strategy.py` 
+3. ✅ **Upload**: Submit via [Lunor Quest portal](https://app.lunor.quest)
 
-You’ll be evaluated on:
-- 📈 Profitability
-- 📊 Sharpe Ratio
-- 📉 Max Drawdown
+---
 
-## Cutoff Policy 
+## 💬 Support & Community
 
-<img src="https://github.com/user-attachments/assets/07c6d25e-7c2e-425d-ab60-725888ee696e" width="350">
+Join the Lunor Discord for strategy discussions and support:  
+👉 **[discord.gg/6NrZmpPpTY](https://discord.gg/6NrZmpPpTY)**
 
-Good luck finding your pairwise alpha! 🧠🚀
+Check the `#pairwise-alpha` channel for:
+- Strategy discussions
+- Technical support  
+- Community updates
+- Live Q&A sessions
 
+---
 
+**Good luck building your alpha! 🧠🚀**
 
-### For more details, check out the challenge page on [Lunor Quest](https://app.lunor.quest)
+*For detailed challenge rules, visit [Lunor Quest](https://app.lunor.quest)*
