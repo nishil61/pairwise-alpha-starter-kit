@@ -43,7 +43,6 @@ Round 2 introduces major enhancements for real-world trading:
 * ⏱️ **More Timeframes**: Added `2H` and `12H` for better signal diversity
 * 📊 **Stability Score**: Bonus points for smooth capital curves
 * 🔓 **Expanded Anchors**: Any Binance coin with ≥$50M daily volume
-* ⚖️ **Forward Testing Only**: No public leaderboard, blind evaluation
 
 ---
 
