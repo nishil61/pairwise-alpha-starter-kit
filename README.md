@@ -49,9 +49,9 @@ Round 2 introduces major enhancements for real-world trading:
 ## 💰 Prize Pool: $5,000 USD + Bonus Gems
 
 **Top 3 USD Winners:**
-* 🥇 1st Place: $2,500
-* 🥈 2nd Place: $1,500  
-* 🥉 3rd Place: $1,000
+* 🥇 1st Place: $2,200
+* 🥈 2nd Place: $1,600  
+* 🥉 3rd Place: $1,200
 
 **Top 10 Leaderboard:** 1,000 to 100 Gems (descending)
 
@@ -198,6 +198,23 @@ anchor_df.columns
 ### 🔧 Data Normalization & NaN Handling
 
 **All data is normalized to 1H frequency (8,760 rows)** with the following behavior:
+
+This table shows how we align and merge data from multiple timeframes—like 1H, 4H, and 1D—into a unified 1-hour timestamp index and inject them to your ```generate_signals()``` method.
+
+Each row represents a 1-hour interval (timestamp (1H)).
+
+Values like open_LDO_1H are available every hour.
+
+But values like close_ETH_4H and close_BTC_1D only appear at their respective 4H and 1D closing times.
+
+For hours where a value isn’t available, we leave it as NaN (missing).
+
+🔄 This is especially important if your strategy relies on switching across timeframes. Be sure to handle NaN values appropriately!
+
+Understanding this structure will help you build more robust and accurate strategies💡
+
+<img src="https://github.com/user-attachments/assets/96f2197a-c667-4367-88a1-1cb4a6b0c0fa" width="50%" height="50%">
+
 
 #### **For 1H Timeframes:**
 ```python
@@ -389,7 +406,7 @@ Only 0 complete buy-sell pairs (BUY: 5, SELL: 0)
 
 1. ✅ **Validate locally**: `python submission_check.py` passes all tests
 2. ✅ **Check file**: Only submit `strategy.py` 
-3. ✅ **Upload**: Submit via [Lunor Quest portal](https://app.lunor.quest)
+3. ✅ **Upload**: Submit via [Lunor Quest portal](https://app.lunor.quest/challenge/1000036)
 
 ---
 
