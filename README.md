@@ -38,7 +38,7 @@ Your mission is to create a **deterministic trading strategy** that identifies p
 Round 2 introduces major enhancements for real-world trading:
 
 * ✅ **Multi-Coin Support**: Up to **3 target coins** with up to **5 anchor coins**
-* 🧠 **Position Sizing**: Dynamic allocation from **0.0 to 1.0** per trade
+* 🧠 **Position Sizing**: Dynamic allocation from **0.0 to 1.0** per trade (0 - 100%)
 * 💹 **Capital Simulation**: Realistic portfolio growth modeling
 * ⏱️ **More Timeframes**: Added `2H` and `12H` for better signal diversity
 * 📊 **Stability Score**: Bonus points for smooth capital curves
