@@ -340,11 +340,6 @@ Your strategy must meet **ALL** minimum thresholds:
 - **Data Source**: Real Binance OHLCV data for technical testing
 - **Volume Requirements**: Validated using historical averages from validation period
 
-### **Final Forward Testing (Platform)**
-- **Evaluation Window**: May 18 – June 14, 2025 (UTC)
-- **Data**: Unseen forward test data
-- **Method**: Blind evaluation with real capital simulation
-- **Ranking**: Based solely on forward testing performance
 
 ---
 
@@ -409,6 +404,80 @@ Only 0 complete buy-sell pairs (BUY: 5, SELL: 0)
 3. ✅ **Upload**: Submit via [Lunor Quest portal](https://app.lunor.quest/challenge/1000036)
 
 ---
+
+## 🏗️ Trading Simulator Ground Rules
+
+### 💰 Capital vs Portfolio Value
+
+| Field | Definition | Usage |
+|-------|------------|-------|
+| **`cash`** | Available cash only | Maintains original simulator logic |
+| **`portfolio_value`** | Cash + all position values | Used for performance metrics calculation |
+
+### 📊 Position Sizing Rules
+
+#### BUY Signals
+- **`position_size`** = % of current **cash** to allocate to trade
+- Example: `position_size = 0.3` → Use 30% of available cash
+- **Fee calculation**: Deducted from allocated amount
+  ```python
+  allocated_cash = current_cash * position_size
+  fee = allocated_cash * fee_pct  
+  actual_investment = allocated_cash - fee
+  ```
+
+#### SELL Signals  
+- **`position_size`** = % of current **holdings** to sell
+- Example: `position_size = 0.5` → Sell 50% of owned shares
+- **Fee calculation**: Deducted from sale proceeds
+
+#### HOLD Signals
+- **Action**: Do nothing, ignore `position_size` value
+- No trades executed, no fees charged
+
+### ⚠️ Exception Handling
+
+#### Common Exceptions
+- **Insufficient Funds**: BUY order exceeds available cash
+- **Invalid SELL**: Attempting to sell more than owned
+- **Missing Price Data**: Symbol price not found at timestamp, case of using data not demanded in metadata.
+- **Invalid Signals**: Signal values outside {BUY, SELL, HOLD}
+- **Invalid Position Size**: Values outside [0.0, 1.0] range
+
+### 🔄 Portfolio Tracking
+
+#### Cost Basis Method
+- **Weighted Average Cost**: New purchases update average cost of asset 
+- **Formula**: `new_avg = (old_shares * old_cost + new_shares * new_price) / total_shares`
+
+### 💸 Fee Structure
+
+#### Fee Calculation
+- **Default Rate**: 0.1% (0.001) on transaction amount
+- **BUY Fees**: Charged on investment amount
+- **SELL Fees**: Charged on gross proceeds
+
+#### Fee Application
+```python
+# BUY: Fee reduces investment
+allocated_cash = cash * position_size
+fee = allocated_cash * fee_pct
+investment = allocated_cash - fee
+
+# SELL: Fee reduces proceeds  
+gross_proceeds = shares * price
+fee = gross_proceeds * fee_pct
+net_proceeds = gross_proceeds - fee
+```
+
+### 🏁 Simulation End
+
+#### Final Liquidation
+- **Automatic**: All positions sold at last timestamp
+- **Price Source**: Last available price for each symbol
+- **Action Type**: Marked as 'LIQUIDATE' in trade log
+- **Purpose**: Calculate final portfolio value for metrics
+
 
 ## 💬 Support & Community
 
