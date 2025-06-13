@@ -6,6 +6,38 @@ Your mission is to create a **deterministic trading strategy** that identifies p
 
 ---
 
+Here's a **Table of Contents** you can include at the top of your GitHub README for the *PairWise Alpha Round 2 Starter Kit*:
+
+---
+
+## 📚 Table of Contents
+
+1. [🧠 Overview](#-pairwise-alpha-round-2-starter-kit)
+2. [🚀 Getting Started](#-getting-started)
+
+   * [Prerequisites](#prerequisites)
+   * [Setup Steps](#setup-steps)
+3. [🗂️ Files in This Repo](#️-files-in-this-repo)
+4. [🌟 What's New in Round 2](#-whats-new-in-round-2)
+5. [💰 Prize Pool](#-prize-pool-5000-usd--bonus-gems)
+6. [🧪 Strategy Requirements](#-your-strategy-must-implement)
+7. [✅ Submission Requirements](#-submission-requirements)
+8. [🔍 Validation Process](#-validation-process)
+9. [📊 Data Structure Reference](#-data-structure-reference)
+10. [🚧 Evaluation Cutoffs](#-evaluation-cutoffs)
+11. [🏆 Scoring System](#-scoring-system)
+12. [📈 Evaluation Overview](#-evaluation-overview)
+13. [🛠️ Quick Start Template](#️-quick-start-template)
+14. [🔧 Common Validation Issues](#-common-validation-issues)
+15. [🏁 Final Submission](#-final-submission)
+16. [🏗️ Trading Simulator Ground Rules](#-trading-simulator-ground-rules)
+17. [💬 Support & Community](#-support--community)
+
+---
+
+Let me know if you'd like a version with collapsible sections (`<details>`), or a clickable sidebar for GitHub Pages.
+
+
 ## 🚀 Getting Started
 
 ### **Prerequisites**
