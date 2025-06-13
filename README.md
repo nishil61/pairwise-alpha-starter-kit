@@ -4,12 +4,6 @@ Welcome to the official starter repo for **[Lunor Quest: PairWise Alpha Round 2]
 
 Your mission is to create a **deterministic trading strategy** that identifies profitable relationships between target coins and anchor coins (BTC, ETH, SOL, and others), executing trades with dynamic position sizing based on predictable patterns.
 
----
-
-Here's a **Table of Contents** you can include at the top of your GitHub README for the *PairWise Alpha Round 2 Starter Kit*:
-
----
-
 ## 📚 Table of Contents
 
 1. [🧠 Overview](#-pairwise-alpha-round-2-starter-kit)
