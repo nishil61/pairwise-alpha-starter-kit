@@ -24,7 +24,7 @@ Your mission is to create a **deterministic trading strategy** that identifies p
 13. [🛠️ Quick Start Template](#️-quick-start-template)
 14. [🔧 Common Validation Issues](#-common-validation-issues)
 15. [🏁 Final Submission](#-final-submission)
-16. [🏗️ Trading Simulator Ground Rules](#-trading-simulator-ground-rules)
+16. [🏗️ Trading Simulator Ground Rules](#%EF%B8%8F-trading-simulator-ground-rules)
 17. [💬 Support & Community](#-support--community)
 
 ---
