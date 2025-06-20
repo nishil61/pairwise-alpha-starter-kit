@@ -338,12 +338,12 @@ def generate_signals(anchor_df, target_df):
 
 Your strategy must meet **ALL** minimum thresholds:
 
-| Metric | Minimum Requirement |
-|--------|-------------------|
-| **Profitability** | ≥ 5% |
-| **Sharpe Ratio** | ≥ 0.5 |
-| **Max Drawdown** | ≤ 50% |
-| **Trading Activity** | ≥ 1 executed trade |
+|         Metric       | Minimum Requirement |
+|----------------------|---------------------|
+| **Profitability**    |  ≥ 15 / 45 points   |
+| **Sharpe Ratio**     |  ≥ 10 / 35 points   |
+| **Max Drawdown**     |  ≥ 5 / 20 points    |
+| **Total Score**      |  ≥ 60 / 100 points  |
 
 ---
 
