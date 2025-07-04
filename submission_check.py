@@ -52,11 +52,11 @@ class StrategyValidator:
         self.min_anchor_volume_usd = 50_000_000  # $50M
         
         # Fixed date range for volume analysis and data generation
-        self.volume_start_date = "2024-06-01"
-        self.volume_end_date = "2025-05-31"
+        self.volume_start_date = "2025-01-01"
+        self.volume_end_date = "2025-06-30"
         
         # Expected number of 1H rows for the full date range
-        self.expected_1h_rows = 8760  # 365 days × 24 hours
+        self.expected_1h_rows = 4368  # 182 days × 24 hours (Jan 1, 2025 to June 30, 2025)
         
     def print_header(self):
         """Print a nice header for the validation process."""
