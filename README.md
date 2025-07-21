@@ -193,7 +193,7 @@ Strategy File: strategy.py
    Function found with parameters: ['anchor_df', 'target_df']
 
 ✓ Strategy Data Generation - PASS
-   Successfully generated data - Full: (8760, 11), Signals: (8760, 4)
+   Successfully generated data - Full: (4320, 11), Signals: (4320, 4)
 
 ✓ Signals Validation - PASS
    All signal validations passed
@@ -230,7 +230,7 @@ anchor_df.columns
 
 ### 🔧 Data Normalization & NaN Handling
 
-**All data is normalized to 1H frequency (8,760 rows)** with the following behavior:
+**All data is normalized to 1H frequency (4,320 rows)** with the following behavior:
 
 This table shows how we align and merge data from multiple timeframes—like 1H, 4H, and 1D—into a unified 1-hour timestamp index and inject them to your `generate_signals()` method.
 
@@ -299,7 +299,7 @@ timestamp                | close_ETH_1D
 def generate_signals(anchor_df, target_df):
     # Sample data structure you'll receive:
 
-    # anchor_df shape: (4368, 11) - 6 months of hourly data
+    # anchor_df shape: (4320, 11) - 6 months of hourly data
     print(anchor_df.head())
     #        timestamp              close_BTC_4H  close_ETH_4H
     # 0  2025-01-01 00:00:00+00:00     67500.0      3500.0
@@ -308,7 +308,7 @@ def generate_signals(anchor_df, target_df):
     # 3  2025-01-01 03:00:00+00:00         NaN         NaN
     # 4  2025-01-01 04:00:00+00:00     67650.0         NaN
 
-    # target_df shape: (4368, 6) - 6 months of hourly data
+    # target_df shape: (4320, 6) - 6 months of hourly data
     print(target_df.head())
     #        timestamp              close_BONK_1H
     # 0  2025-01-01 00:00:00+00:00      0.000012
@@ -331,14 +331,14 @@ def generate_signals(anchor_df, target_df):
 
 1. **Always check for NaN**: Use `pd.notna()` or `pd.isna()` before using values
 2. **NaN Pattern**: Predictable based on timeframe (every 2H, 4H, etc.)
-3. **Complete Timestamps**: All 4,368 hourly timestamps are present
+3. **Complete Timestamps**: All 4,320 hourly timestamps are present
 4. **No Forward Fill**: Missing periods remain as NaN (no artificial data)
 
 ### 📅 Validation Data Range
 
 - **Local Validation Period**: Jan 1, 2025 00:00:00 GMT → June 30, 2025 00:00:00 GMT
 - **Frequency**: 1H (hourly timestamps)
-- **Total Rows**: 4,368 (182 days × 24 hours)
+- **Total Rows**: 4,320 (180 days × 24 hours)
 - **Format**: `2025-01-01 00:00:00+00:00`
 - **Volume Calculations**: Based on this historical period for local validation
 
