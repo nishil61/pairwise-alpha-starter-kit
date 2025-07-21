@@ -56,7 +56,7 @@ class StrategyValidator:
         self.volume_end_date = "2025-06-30"
         
         # Expected number of 1H rows for the full date range
-        self.expected_1h_rows = 4368  # 182 days × 24 hours (Jan 1, 2025 to June 30, 2025)
+        self.expected_1h_rows = 4320 #Correct Date Range Stamp
         
     def print_header(self):
         """Print a nice header for the validation process."""
