@@ -68,8 +68,7 @@ def signal_generation(df, sym):
     min_hold = 1
     max_hold = 3
 
-    last_signal = "SELL"
-
+    # Ensure flat-to-flat logic: only one position at a time per symbol
     for i, row in df.iterrows():
         p = row["price"]
         sig = "HOLD"
@@ -77,14 +76,14 @@ def signal_generation(df, sym):
 
         anchor_score = row["anchor_score"] if "anchor_score" in row else (3 if row["anchor_strong"] else 0)
 
-        if not in_pos and last_signal == "SELL" and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
+        # Only allow BUY if not in position
+        if not in_pos and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
             sig = "BUY"
             size = 1.0
             in_pos = True
             entry = p
             entry_i = i
             trailing_stop = p * (1 - stop_loss * 0.7)
-            last_signal = "BUY"
         elif in_pos:
             profit = (p - entry) / entry
             age = i - entry_i
@@ -106,7 +105,6 @@ def signal_generation(df, sym):
                 size = 0
                 in_pos = False
                 trailing_stop = None
-                last_signal = "SELL"
         signals.append(sig)
         sizes.append(size)
     return pd.DataFrame({
@@ -115,6 +113,10 @@ def signal_generation(df, sym):
     })
 
 def compute_rsi(p, n=14):
+    d=p.diff().fillna(0)
+    u=d.clip(lower=0); d_=(-d).clip(lower=0)
+    rs=u.rolling(n).mean()/d_.rolling(n).mean().replace(0,1e-8)
+    return 100-100/(1+rs)
     d=p.diff().fillna(0)
     u=d.clip(lower=0); d_=(-d).clip(lower=0)
     rs=u.rolling(n).mean()/d_.rolling(n).mean().replace(0,1e-8)
