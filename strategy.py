@@ -68,6 +68,7 @@ def signal_generation(df, sym):
     min_hold = 1
     max_hold = 3
 
+    # Strict flat-to-flat logic: only one position at a time per symbol, never consecutive BUYs or SELLs
     for i, row in df.iterrows():
         p = row["price"]
         sig = "HOLD"
@@ -75,8 +76,8 @@ def signal_generation(df, sym):
 
         anchor_score = row["anchor_score"] if "anchor_score" in row else (3 if row["anchor_strong"] else 0)
 
-        # Only allow BUY if not in position (strict flat-to-flat logic)
-        if not in_pos and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
+        # Only allow BUY if not in position and previous signal was not BUY
+        if not in_pos and (len(signals) == 0 or signals[-1] != "BUY") and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
             sig = "BUY"
             size = 1.0
             in_pos = True
@@ -99,7 +100,7 @@ def signal_generation(df, sym):
                 (row.price < row.sma20 and age >= min_hold) or
                 age >= max_hold
             )
-            if exit_cond:
+            if exit_cond and (len(signals) == 0 or signals[-1] != "SELL"):
                 sig = "SELL"
                 size = 0
                 in_pos = False
@@ -107,33 +108,31 @@ def signal_generation(df, sym):
         signals.append(sig)
         sizes.append(size)
 
-    # Final strict enforcement: alternate BUY/SELL, never allow consecutive BUYs or SELLs
+    # Remove any leading SELLs (should always start with BUY if any)
+    while signals and signals[0] == "SELL":
+        signals.pop(0)
+        sizes.pop(0)
+
+    # Remove any consecutive BUYs or SELLs (should always alternate)
     filtered_signals = []
     filtered_sizes = []
-    position = False
+    last = None
     for sig, size in zip(signals, sizes):
-        if sig == "BUY":
-            if not position:
-                filtered_signals.append("BUY")
-                filtered_sizes.append(1.0)
-                position = True
-            else:
-                filtered_signals.append("HOLD")
-                filtered_sizes.append(0.0)
-        elif sig == "SELL":
-            if position:
-                filtered_signals.append("SELL")
-                filtered_sizes.append(0.0)
-                position = False
-            else:
-                filtered_signals.append("HOLD")
-                filtered_sizes.append(0.0)
-        else:
+        if sig == "BUY" and last != "BUY":
+            filtered_signals.append("BUY")
+            filtered_sizes.append(1.0)
+            last = "BUY"
+        elif sig == "SELL" and last == "BUY":
+            filtered_signals.append("SELL")
+            filtered_sizes.append(0.0)
+            last = "SELL"
+        elif sig == "HOLD":
             filtered_signals.append("HOLD")
             filtered_sizes.append(0.0)
+        # skip duplicate BUYs or SELLs
 
     return pd.DataFrame({
-        "timestamp": df.timestamp, "symbol": sym,
+        "timestamp": df.timestamp.iloc[:len(filtered_signals)], "symbol": sym,
         "signal": filtered_signals, "position_size": filtered_sizes
     })
 
