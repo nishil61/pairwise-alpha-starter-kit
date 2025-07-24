@@ -58,9 +58,9 @@ def signal_generation(df, sym):
     entry_i = 0
     trailing_stop = None
 
-    # Ultra-conservative for max win rate
-    take_profit = 0.006   # Even quicker profit taking
-    stop_loss = 0.005     # Even tighter stop loss
+    
+    take_profit = 0.006
+    stop_loss = 0.005
     min_anchor_score = 2
     min_rsi = 10
     max_rsi = 90
