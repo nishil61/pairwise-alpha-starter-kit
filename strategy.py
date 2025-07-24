@@ -58,7 +58,6 @@ def signal_generation(df, sym):
     entry_i = 0
     trailing_stop = None
 
-    
     take_profit = 0.006
     stop_loss = 0.005
     min_anchor_score = 2
@@ -69,6 +68,8 @@ def signal_generation(df, sym):
     min_hold = 1
     max_hold = 3
 
+    last_signal = "SELL"
+
     for i, row in df.iterrows():
         p = row["price"]
         sig = "HOLD"
@@ -76,13 +77,14 @@ def signal_generation(df, sym):
 
         anchor_score = row["anchor_score"] if "anchor_score" in row else (3 if row["anchor_strong"] else 0)
 
-        if not in_pos and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
+        if not in_pos and last_signal == "SELL" and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
             sig = "BUY"
             size = 1.0
             in_pos = True
             entry = p
             entry_i = i
             trailing_stop = p * (1 - stop_loss * 0.7)
+            last_signal = "BUY"
         elif in_pos:
             profit = (p - entry) / entry
             age = i - entry_i
@@ -104,6 +106,7 @@ def signal_generation(df, sym):
                 size = 0
                 in_pos = False
                 trailing_stop = None
+                last_signal = "SELL"
         signals.append(sig)
         sizes.append(size)
     return pd.DataFrame({
