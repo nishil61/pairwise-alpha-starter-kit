@@ -68,7 +68,6 @@ def signal_generation(df, sym):
     min_hold = 1
     max_hold = 3
 
-    # Ensure flat-to-flat logic: only one position at a time per symbol
     for i, row in df.iterrows():
         p = row["price"]
         sig = "HOLD"
@@ -76,7 +75,7 @@ def signal_generation(df, sym):
 
         anchor_score = row["anchor_score"] if "anchor_score" in row else (3 if row["anchor_strong"] else 0)
 
-        # Only allow BUY if not in position
+        # Only allow BUY if not in position (strict flat-to-flat logic)
         if not in_pos and anchor_score >= min_anchor_score and row.zscore > min_zscore and row.hr_vol < max_hr_vol and min_rsi < row.rsi < max_rsi:
             sig = "BUY"
             size = 1.0
@@ -107,18 +106,41 @@ def signal_generation(df, sym):
                 trailing_stop = None
         signals.append(sig)
         sizes.append(size)
+
+    # Final strict enforcement: alternate BUY/SELL, never allow consecutive BUYs or SELLs
+    filtered_signals = []
+    filtered_sizes = []
+    position = False
+    for sig, size in zip(signals, sizes):
+        if sig == "BUY":
+            if not position:
+                filtered_signals.append("BUY")
+                filtered_sizes.append(1.0)
+                position = True
+            else:
+                filtered_signals.append("HOLD")
+                filtered_sizes.append(0.0)
+        elif sig == "SELL":
+            if position:
+                filtered_signals.append("SELL")
+                filtered_sizes.append(0.0)
+                position = False
+            else:
+                filtered_signals.append("HOLD")
+                filtered_sizes.append(0.0)
+        else:
+            filtered_signals.append("HOLD")
+            filtered_sizes.append(0.0)
+
     return pd.DataFrame({
         "timestamp": df.timestamp, "symbol": sym,
-        "signal": signals, "position_size": sizes
+        "signal": filtered_signals, "position_size": filtered_sizes
     })
 
 def compute_rsi(p, n=14):
-    d=p.diff().fillna(0)
-    u=d.clip(lower=0); d_=(-d).clip(lower=0)
-    rs=u.rolling(n).mean()/d_.rolling(n).mean().replace(0,1e-8)
-    return 100-100/(1+rs)
-    d=p.diff().fillna(0)
-    u=d.clip(lower=0); d_=(-d).clip(lower=0)
-    rs=u.rolling(n).mean()/d_.rolling(n).mean().replace(0,1e-8)
-    return 100-100/(1+rs)
+    d = p.diff().fillna(0)
+    u = d.clip(lower=0)
+    d_ = (-d).clip(lower=0)
+    rs = u.rolling(n).mean() / d_.rolling(n).mean().replace(0, 1e-8)
+    return 100 - 100 / (1 + rs)
 
